@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.12.0.min.js"></script>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.12.0.min.js"></script>
+
+
+
+
+<style type="text/css">
+
+	.jumbotron{text-align:center;color:white;}
+	
+	.wide {width:80%;}
+
+
+	.jumbotron{background-color:black;}
+
+
+
+
+</style>
+
+	<title></title>
+</head>
+<body style="">
+<div class="container">
+	<div class="jumbotron">
+		
+		<h1>TableHeader</h1>
+		<h3>MoreText</h3>
+	</div>
+
+	<div class="panel panel-default">
+
+	  <div class=" panel-heading">Panel Heading
+
+	  </div>
+
+	  <div class="panel panel-body" id="employee-table">
+
+
+							<table style="width:100%" class="table table-striped" id = "eTable">
+
+								<tr>
+
+									<td>Employee Name</td>
+									<td>Role</td>
+									<td>Start Date</td>
+									<td>months worked</td>
+									<td>monthly rate</td>
+									<td>total billed</td>
+
+								</tr>
+
+
+
+				</table>
+
+
+
+	  </div>
+
+	</div>
+
+	
+	<div class="panel panel-default">
+
+		<div class=" panel-heading">Words go here
+			
+		</div>
+
+		<div class="panel panel-body"
+
+			<form id="TheForm">
+
+			<h4>Employee Name</h4>
+
+			<input class="wide" id="name-input">
+			<h4>Role</h4>
+
+			<input  class="wide" id="role-input">
+			<h4>Start Date</h4>
+
+			<input class="wide" id="start-input">
+			<h4>Montly Rate</h4>
+
+			<input class="wide" id="rate-input">
+			<br><br>
+
+			<input type="submit" value="submit" id="Submit">
+
+		</div>
+
+	</div>
+
+</div>
+<script src="https://code.jquery.com/jquery.js"></script>
+<script src="https://cdn.firebase.com/js/client/2.4.1/firebase.js"></script>
+<script type="text/javascript">
+	var inputData = new Firebase("https://szmdatabase.firebaseio.com/");
+	
+
+	 function getMonths(dateStart) {
+	 	var date = new Date(dateStart);
+		var currentDate = new Date();
+
+		// get the months between these dates
+		var month_btw_years = (currentDate.getFullYear() - date.getFullYear()) * 12;
+		var month_btw_months = currentDate.getMonth() - date.getMonth();
+		return month_btw_months + month_btw_years;
+	 }
+
+	$(document).on("click", "#Submit", function() {
+
+		/* 1: Capture Variables from Form, Make New Ones
+		/* ============================================= */
+
+		// A: INPUT VARs
+		// =============
+		var name = $('#name-input').val().trim();
+		var role = $('#role-input').val().trim();
+		var start = $('#start-input').val().trim();
+		var rate = $('#rate-input').val().trim();
+		console.log(name);
+
+		// remove dollar sign if it's there
+		if (rate[0] === "$") {
+			rate.splice(0, 1);
+		}
+
+		// months
+		var months = getMonths(start);
+
+		// C: WHAT WAS BILLED
+		// ==================
+		var billed = rate * months;
+
+    // D: Push to Firebase
+    inputData.push({
+          name: name,
+          role: role,
+          start: start,
+          rate: rate
+      });
+	});
+
+	inputData.on("child_added", function(snapshot) {
+
+        // console logging the value of the snapshot or current data
+        console.log(snapshot.val());
+
+        var nameInput = snapshot.val().name;
+        var roleInput = snapshot.val().role;
+        var startInput = snapshot.val().start;
+        var rateInput = snapshot.val().rate;
+        var monthsInput = getMonths(startInput);
+        var billedInput = rateInput * monthsInput;
+
+        $("#eTable").find('tbody')
+	    .append($('<tr>')
+	        .append($('<td>')
+	            .text(nameInput)
+	        )
+	        .append($('<td>')
+	            .text(roleInput)
+	        )
+	        .append($('<td>')
+	            .text(startInput)
+	        )
+	        .append($('<td>')
+	            .text(monthsInput)
+	        )
+	        .append($('<td>')
+	            .text(rateInput)
+	        )
+	        .append($('<td>')
+	            .text(billedInput)
+	        )
+	    );
+
+            
+    });
+
+</script>
+</body>
+</html>
