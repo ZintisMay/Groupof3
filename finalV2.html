@@ -145,11 +145,13 @@
           name: name,
           role: role,
           start: start,
-          rate: rate
+          rate: rate,
+          dateAdded: Firebase.ServerValue.TIMESTAMP
       });
 	});
 
-	inputData.on("child_added", function(snapshot) {
+	// limit to 3
+	inputData.orderByChild("dateAdded").limitToLast(3).on("child_added", function(snapshot) {
 
         // console logging the value of the snapshot or current data
         console.log(snapshot.val());
