@@ -103,6 +103,7 @@
 <script src="https://cdn.firebase.com/js/client/2.4.1/firebase.js"></script>
 <script type="text/javascript">
 	var inputData = new Firebase("https://szmdatabase.firebaseio.com/");
+	var counter = 0;
 	
 
 	 function getMonths(dateStart) {
@@ -157,11 +158,19 @@
         console.log(snapshot.val());
 
         var nameInput = snapshot.val().name;
+        console.log(nameInput);
         var roleInput = snapshot.val().role;
         var startInput = snapshot.val().start;
         var rateInput = snapshot.val().rate;
         var monthsInput = getMonths(startInput);
         var billedInput = rateInput * monthsInput;
+
+        counter++;
+
+        if (counter === 4) {
+					document.getElementById("eTable").deleteRow(1);
+        	counter--;
+        }
 
         $("#eTable").find('tbody')
 	    .append($('<tr>')
@@ -184,6 +193,7 @@
 	            .text(billedInput)
 	        )
 	    );
+
 
             
     });
